@@ -1,26 +1,5 @@
 <resources>
     <string name="app_name">SampleApp</string>
     <string name="title_home">EventBusTest</string>
-    <string name="title_dashboard">LogTest</string>
-    <string name="title_notifications">QiTest</string>
-
-    <!-- MainActivity -->
-    <string name="toast_enter_ip">Please enter the ip address</string>
-    <string name="toast_enter_correct">Please enter the correct ip address</string>
-    <string name="toast_connected">Pepper连接成功</string>
-    <string name="toast_connect_failed">连接失败</string>
-    <string name="toast_not_connected">未连接</string>
-    <string name="toast_motion_failed">ALMotion failed</string>
-    <string name="toast_move_failed">move failed</string>
-
-    <!-- activity_main -->
-    <string name="edittext_ip_hint">IP Address</string>
-    <string name="button_connnect">连接</string>
-    <string name="label_x">前后 (m)</string>
-    <string name="label_y">左右 (m)</string>
-    <string name="label_theta">旋转 (deg)</string>
-    <string name="edittext_x_hint">前后</string>
-    <string name="edittext_y_hint">左右</string>
-    <string name="edittext_theta_hint">旋转</string>
 
 </resources>
