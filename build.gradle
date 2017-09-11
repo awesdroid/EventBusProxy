@@ -1,0 +1,81 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.0-beta2'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+ext {
+    scriptExportJar = './exportjar.sh'
+    needExportJar = false
+    disableExportJar = false
+    if(project.hasProperty('TAG')) {
+        tag = TAG
+    } else {
+        tag = 'CMTI:'
+    }
+}
+
+task exportJar(type: Exec) {
+    ignoreExitValue = true
+
+    workingDir rootDir
+    commandLine scriptExportJar, getProperty("projectVersion")
+    doFirst {
+        println "$tag Task<$name>: execute $scriptExportJar!"
+    }
+}
+
+gradle.projectsEvaluated {
+    if(rootProject.hasProperty('disableSampleApp')) {
+        disableExportJar = false
+        subprojects.each {
+            if (it.name.contains('SampleApp')) {
+                it.tasks.each { task ->
+                    task.enabled false
+                }
+            }
+        }
+    }
+}
+
+gradle.taskGraph.whenReady {
+    if(rootProject.name == 'common') {
+        for(Task task : gradle.taskGraph.allTasks) {
+            if (!rootProject.hasProperty('enableUnitTest') &&
+                    (task.name.contains("compileDebugJava") ||
+                            task.name.contains("compileReleaseJava"))) {
+                needExportJar = true
+                println "$tag enable needExportJar in $task!"
+                break
+            }
+        }
+    }
+}
+
+gradle.buildFinished {
+    if(!disableExportJar) {
+        if(needExportJar) {
+            exportJar.execute()
+        }
+    }
+}

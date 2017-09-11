@@ -1,0 +1,38 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+    defaultConfig {
+        minSdkVersion 24
+        targetSdkVersion 25
+        versionCode 51
+        versionName "0.5.1"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'org.greenrobot:eventbus:3.0.0'
+
+    androidTestCompile 'com.android.support.test:runner:1.0.1'
+//    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+}
+
+task copyDependencies(type: Copy) {
+    from configurations.compile
+    into "$buildDir/dependencies"
+}
+preBuild.dependsOn(copyDependencies)
