@@ -141,8 +141,8 @@ final public class EventBusProxy {
             if (method.getName().equals("onEvent")) {
                 Class<?>[] types = method.getParameterTypes();
                 if (types.length == 1) {
-                    if (!types[0].getSimpleName().equals("BaseEvent")){
-                        Log.d(EventBusProxy.TAG, "findByMethod() - find " + types[0]);
+                    if (!types[0].isAssignableFrom(BaseEvent.class)){
+                        Log.d(TAG, "findByMethod() - find " + types[0]);
                         return types[0];
                     }
                 } else {
