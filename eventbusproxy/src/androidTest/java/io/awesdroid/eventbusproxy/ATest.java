@@ -48,7 +48,14 @@ public class ATest {
 
     @Test
     public void testSubscriber0() {
-        Subscriber0 subscriber0 = new Subscriber0();
+//        Subscriber0<TestEvent0> subscriber0 = new Subscriber0<>();
+        Subscriber<TestEvent0> subscriber0 = new Subscriber<TestEvent0>() {
+            @Override
+            public void onEvent(TestEvent0 event) {
+                System.out.println(EventBusProxy.TAG + " **** " +
+                        this.getClass().getName() + ".onEvent(): " + event);
+            }
+        };
         EventBusProxy.register(subscriber0);
         subscribers.add(subscriber0);
 
