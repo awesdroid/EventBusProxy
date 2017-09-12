@@ -16,6 +16,8 @@
 
 package io.awesdroid.eventbusproxy;
 
+import android.util.Log;
+
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -124,32 +126,47 @@ final public class EventBusProxy {
     }
 
     static Type getEventType(Subscriber subscriber) {
-//        try {
-            Class<?> clazz = subscriber.getClass();
-            Method[] methods = clazz.getMethods();
-            for (Method method : methods) {
-                if (method.getName().equals("onEvent")) {
-                    Class<?>[] types = method.getParameterTypes();
-                    if (types.length == 1) {
-                        if (!types[0].getSimpleName().equals("BaseEvent")){
-                            return types[0];
-                        }
-                    } else {
-                        throw new RuntimeException("More than 1 Type for onEvent()");
+        Class<?> clazz = subscriber.getClass();
+
+        Type found;
+        if ((found = findByInterface(clazz)) == null) {
+            found = findByMethod(clazz);
+        }
+        return found;
+    }
+
+    private static Type findByMethod(Class<?> clazz) {
+        Method[] methods = clazz.getMethods();
+        for (Method method : methods) {
+            if (method.getName().equals("onEvent")) {
+                Class<?>[] types = method.getParameterTypes();
+                if (types.length == 1) {
+                    if (!types[0].getSimpleName().equals("BaseEvent")){
+                        Log.d(EventBusProxy.TAG, "findByMethod() - find " + types[0]);
+                        return types[0];
                     }
+                } else {
+                    throw new RuntimeException("More than 1 Type for onEvent()");
                 }
             }
-//            Method method = subscriber.getClass().getMethod("onEvent");   // Doesn't work on Android
-//            Method method = subscriber.getClass().getMethod("onEvent", BaseEvent.class); / Doesn't work on Android
-//            Type[] types = method.getParameterTypes();
-//            if (types.length == 1) {
-//                return types[0];
-//            } else {
-//                throw new RuntimeException("More than 1 ParameterizedType for onEvent()");
-//            }
-//        } catch (NoSuchMethodException e) {
-//            e.printStackTrace();
-//        }
+        }
+        return null;
+    }
+
+    private static Type findByInterface(Class<?> clazz) {
+        Type[] ifs = clazz.getGenericInterfaces();
+        if (ifs.length == 0)
+            return null;
+
+        for (Type type : ifs) {
+            if (type instanceof ParameterizedType) {
+                Type[] aType = ((ParameterizedType) type).getActualTypeArguments();
+                if (aType.length == 1) {
+                    Log.d(EventBusProxy.TAG, "findByInterface() - find " + aType[0]);
+                    return aType[0];
+                }
+            }
+        }
         return null;
     }
 }
