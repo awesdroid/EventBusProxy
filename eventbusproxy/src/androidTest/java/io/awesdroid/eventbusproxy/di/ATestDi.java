@@ -51,9 +51,22 @@ public class ATestDi {
     @Inject
     Subscriber<TestEvent1> subscriber1;
 
+    @Inject
+    Subscriber<TestEvent2> subscriber2;
+
+    @Inject
+    Subscriber<TestEvent3> subscriber3;
+
+    @Inject
+    TestEvent2 testEvent2;
+
+    @Inject
+    TestEvent3 testEvent3;
+
     @Before
     public void init() {
-        Log.d(TAG, "init(): in thread <" + Thread.currentThread().getName() + ">");
+        Log.d(TAG, "<" + Thread.currentThread().getName() + "> " +
+                "init(): ");
         SubscriberComponent subscriberComponent = DaggerSubscriberComponent.builder()
                 .subscriberModule(new SubscriberModule()).build();
         subscriberComponent.inject(this);
@@ -73,6 +86,22 @@ public class ATestDi {
         TestEvent1 testEvent = new TestEvent1();
         EventBusProxy.register(subscriber1);
         EventBusProxy.send(testEvent);
+    }
+
+    @Test
+    public void testSubscriber2() {
+        EventBusProxy.register(subscriber2);
+        Log.d(TAG, "<" + Thread.currentThread().getName() + "> " +
+                "testSubscriber2(): ==== SEND " + testEvent2);
+        EventBusProxy.send(testEvent2);
+    }
+
+    @Test
+    public void testSubscriber3() {
+        EventBusProxy.register(subscriber3);
+        Log.d(TAG, "<" + Thread.currentThread().getName() + "> " +
+                "testSubscriber3(): ==== SEND " + testEvent3);
+        EventBusProxy.send(testEvent3);
     }
 
     @Test
@@ -105,10 +134,43 @@ public class ATestDi {
         }
     }
 
+    @Test
+    public void testSubscriber23() {
+        ExecutorService executor = Executors.newCachedThreadPool();
+
+        for (int i = 0; i < 10; i++) {
+            Future future2 = executor.submit(new Runnable() {
+                @Override
+                public void run() {
+                    testSubscriber2();
+                }
+            });
+            Future future3 = executor.submit(new Runnable() {
+                @Override
+                public void run() {
+                    testSubscriber3();
+                }
+            });
+
+            try {
+                future2.get();
+                future3.get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
     @After
     public void clean() {
-        Log.d(TAG, "clean(): in thread <" + Thread.currentThread().getName() + ">");
+        Log.d(TAG, "<" + Thread.currentThread().getName() + "> " +
+                "clean(): ");
         EventBusProxy.unregister(subscriber0);
         EventBusProxy.unregister(subscriber1);
+        EventBusProxy.unregister(subscriber2);
+        EventBusProxy.unregister(subscriber3);
     }
 }

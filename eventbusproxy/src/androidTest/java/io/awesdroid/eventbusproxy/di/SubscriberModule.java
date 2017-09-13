@@ -53,4 +53,26 @@ public class SubscriberModule {
             }
         };
     }
+
+    @Provides
+    Subscriber<TestEvent2> provideSubscriber2() {
+        return new Subscriber<TestEvent2>() {
+            @Override
+            public void onEvent(TestEvent2 event) {
+                Log.d(TAG, "<" + Thread.currentThread().getName() + "> " +
+                        "onEvent(): **** RECV " + event);
+            }
+        };
+    }
+
+    @Provides
+    Subscriber<TestEvent3> provideSubscriber3() {
+        return new Subscriber<TestEvent3>() {
+            @Override
+            public void onEvent(TestEvent3 event) {
+                Log.d(TAG, "<" + Thread.currentThread().getName() + "> " +
+                        "onEvent(): **** RECV " + event);
+            }
+        };
+    }
 }
