@@ -58,6 +58,7 @@ public class ATestDi {
                 .subscriberModule(new SubscriberModule()).build();
         subscriberComponent.inject(this);
         EventBusProxy.init();
+        EventBusProxy.setDebug(false);
     }
 
     @Test

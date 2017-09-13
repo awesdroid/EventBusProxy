@@ -63,6 +63,8 @@ final public class EventBusProxy {
         }
     };
 
+    private static boolean isDebug = false;
+
     private EventBusProxy() {}
 
     static public void register(Subscriber subscriber) {
@@ -87,6 +89,10 @@ final public class EventBusProxy {
 //        subscriptionsByEventType.put((Class)type, subscriber);
         subscriptionsByEventType.clear();
         sEventBus.register(proxy);
+    }
+
+    public static void setDebug(boolean debug) {
+        isDebug = debug;
     }
 
     static void unregister0(Subscriber subscriber) {
@@ -142,7 +148,9 @@ final public class EventBusProxy {
                 Class<?>[] types = method.getParameterTypes();
                 if (types.length == 1) {
                     if (!types[0].isAssignableFrom(BaseEvent.class)){
-                        Log.d(TAG, "findByMethod() - find " + types[0]);
+                        if (isDebug) {
+                            Log.d(TAG, "findByMethod() - find " + types[0]);
+                        }
                         return types[0];
                     }
                 } else {
@@ -162,7 +170,9 @@ final public class EventBusProxy {
             if (type instanceof ParameterizedType) {
                 Type[] aType = ((ParameterizedType) type).getActualTypeArguments();
                 if (aType.length == 1) {
-                    Log.d(EventBusProxy.TAG, "findByInterface() - find " + aType[0]);
+                    if (isDebug) {
+                        Log.d(EventBusProxy.TAG, "findByInterface() - find " + aType[0]);
+                    }
                     return aType[0];
                 }
             }
